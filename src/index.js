@@ -20,21 +20,23 @@ const client = new Client({
 // Caso o WhatsApp solicite QR Code
 client.on('qr', async (qr) => {
     console.log('\nQR Code recebido.\n');
-
-    // Exibe o QR Code no terminal
+    if(MODO_AUTENTICACAO === "pairing"){
+        // Tenta gerar o código de pareamento
+        try {
+            const pairingCode = await client.requestPairingCode(PHONE_NUMBER);
+            console.log('\n==============================');
+            console.log('Código de Pareamento:');
+            console.log(pairingCode);
+            console.log('==============================\n');
+        } catch (err) {
+            console.log('Não foi possível gerar o código de pareamento.');
+            console.error(err.message);
+        }
+    }else{
+        // Exibe o QR Code no terminal
     qrcode.generate(qr, { small: true });
-
-    // Tenta gerar o código de pareamento
-    try {
-        const pairingCode = await client.requestPairingCode(PHONE_NUMBER);
-        console.log('\n==============================');
-        console.log('Código de Pareamento:');
-        console.log(pairingCode);
-        console.log('==============================\n');
-    } catch (err) {
-        console.log('Não foi possível gerar o código de pareamento.');
-        console.error(err.message);
     }
+    
 });
 
 
